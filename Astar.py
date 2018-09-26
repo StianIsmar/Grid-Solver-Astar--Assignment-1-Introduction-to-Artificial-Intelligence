@@ -3,6 +3,7 @@ from pprint import pprint
 #closedList: Noder som er besokt!
 class Node():
     def __init__(self, parent=None, position=None):
+        
         # Variables that are contained in each node:
         self.parent = parent
         self.position = position
