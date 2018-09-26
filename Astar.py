@@ -4,7 +4,7 @@ from pprint import pprint
 class Node():
     def __init__(self, parent=None, position=None):
 
-         
+
         # Variables that are contained in each node:
         self.parent = parent
         self.position = position
@@ -15,7 +15,7 @@ class Node():
         ##Metode som retur true om posisjonen er lik for to objekter.
 
     def __eq__(self, other):
-        self.position == other.position
+        return self.position == other.position
 
 
 def astar(grid, start, end):
@@ -47,14 +47,14 @@ def astar(grid, start, end):
                 currentIndex = index
         # Pop current off list and add to closed list
         openList.pop(currentIndex)
-        closedList.append(currentNode)
-
+        print(currentNode == endNode)
         if currentNode == endNode:
             # Har funnet endenoden. Returner pathen fra start til slutt!
             path = []
             current = currentNode
             while current is not None:
                 path.append(current.position)
+                print(current.position)
                 current = current.parent
             return path[::-1]
 
@@ -78,43 +78,48 @@ def astar(grid, start, end):
             checkList.append(childLftPos)
 
             # Check the new positions (Not outside grid and in blocked:
+            #print((len(grid)) - 1 )
+            #print("Dette over er len(grid)-1")
+            #print((len(grid[0]) - 1))
             for x in checkList:
-                if (x[0] < 0 or x[1] < 0 or x[0] > (len(grid)) - 1) or x[1] < (len(grid[0]) - 1):
+                if (x[0] < 0 or x[1] < 0 or x[0] > (len(grid)) - 1) or x[1] > (len(grid[0]) - 1):
                     continue
                 # check if there is a blocking there!
                 if grid[x[0]][x[1]] == '#':
                     continue
                 else:
+                    # Setting parent and position of child:
                     newNode = Node(currentNode, x)
+                    # Adding childnode to children of parent-array.
                     children.append(newNode)
 
             # looping through the added children:
-        for child in children:
+            for child in children:
 
-            # Child is on the closed list
-            for closedChild in closedList:
-              if closedChild == child:
-                    continue
-            # if not on the closedList (It is not expanded)
-            # find the values for that particular child:
-            child.g = currentNode.g + 1
-            child.h = (child.position[0] ** 2 - currentNode.position[0] ** 2) + (
-                child.position[1] ** 2 - currentNode.position[1] ** 2)
-            child.f = child.g + child.f
-
-            #Child already in openList?
-            for openNode in openList:
-                if (child == openNode and child.g > openNode.g):
-                    # Da er den aktuelle barnenoden allerede i openNode, altså er den "oppdaget" før (men
-                    # ikke besøkt). Sjekker også om g-verdien (avstanden fra start (,) til barnet er større enn
-                    # avstanden fra start til
-                    continue
+                # Child is on the closed list
+                for closedChild in closedList:
+                    if closedChild == child:
+                        continue
+                # if not on the closedList (It is not expanded)
+                # find the values for that particular child:
+                child.g = currentNode.g + 1
+                child.h = ((child.position[0] - endNode.position[0]) ** 2) + ((child.position[1] - endNode.position[0]) ** 2)
+                child.f = child.g + child.h
 
 
 
+                #Child already in openList?
+                for openNode in openList:
+                    if child == openNode and child.g > openNode.g:
+                        # Da er den aktuelle barnenoden allerede i openNode, altså er den "oppdaget" før (men
+                        # ikke besøkt). Sjekker også om g-verdien (avstanden fra start (,) til barnet er større enn
+                        # Traverseringsavstanden fra start til den like noden sjekkes. Er den STØRRE for childen,
+                        # legges ikke child til!
+                            continue
 
-            children.append((currentNode.position))
-            # set their g, h and f values!
+                #Etter at alt er kjørt gjennom, og childen er sammenlignet legges den til i openList.
+                openList.append(child)
+                # set their g, h and f values!
 
 
 def main():
@@ -147,8 +152,9 @@ def main():
     # path = astar(maze, (3,13),(3,17))
     start = (0, 0)
     end = (7, 6)
-    path = astar(maze, start,end)
-
+    path = astar(maze, start, end)
+   # print("JA")
+  #  print(len(path))
 
 if __name__ == '__main__':
     main()
